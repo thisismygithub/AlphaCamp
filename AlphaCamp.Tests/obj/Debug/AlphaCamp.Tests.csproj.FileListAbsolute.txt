@@ -1,0 +1,1 @@
+C:\Users\user1\Source\tfs\alphaCamp\AlphaCamp\AlphaCamp\AlphaCamp.Tests\obj\Debug\AlphaCamp.Tests.csprojResolveAssemblyReference.cache

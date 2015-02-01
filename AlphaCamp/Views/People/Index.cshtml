@@ -1,0 +1,224 @@
+﻿@using System.Collections.Concurrent
+@using Microsoft.AspNet.Identity
+@model AlphaCamp.Models.Appointment
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    #base {
+        float: left;
+        width: 100%;
+        height: 180px;
+    }
+
+    #mapholder {
+        float: left;
+        width: 70%;
+        height: 450px;
+    }
+
+    #right {
+        width: 30%;
+        height: 180px;
+        float: right;
+    }
+
+    ul {
+        list-style-type: none;
+    }
+</style>
+
+
+
+<h2>Index</h2>
+
+<div id="base">
+    <div id="mapholder"></div>
+    <div id="right">
+        開團：
+        @using (Html.BeginForm("Index", "People", FormMethod.Post, new { id = "form1" }))
+        {
+            <ul>
+                <li>
+                    團名(活動名稱)：
+                    <input type="text" name="Name" value="" class="form-control" />
+                </li>
+                <li>
+                    <br />
+                    成團人數：
+                    <input type="number" name="PeopleAmount" value="" class="form-control" />
+                </li>
+                <li>
+                    <br />
+                    討伐目標：
+                    @Html.DropDownList("FoodTypes", (IEnumerable<SelectListItem>)ViewBag.foodTypes, new { @class = "form-control" })
+                </li>
+                <li>
+                    <br />
+                    口袋深度：
+                    <input type="number" name="PriceRangeStart" value="" class="form-control" />
+                    ~
+                    <br />
+                    <input type="number" name="PriceRangeEnd" value="" class="form-control" />
+                </li>
+                <li>
+                    <br />
+                    吃飯時間:
+                    <div class='input-group date' id='datetimepicker2'>
+                        <input type="datetime" name="EatTime" value="" class="form-control datetimepicker" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </li>
+                <li>
+                    <br />
+                    是否徵求有緣人：
+                    @Html.CheckBox("AllowAnonymous", new { data_on_text = "Yes", data_off_text = "No" })
+                </li>
+                <li>
+                    <br />
+                    <a href="javascript:void(0);" onclick=" sendWithLocation(this.form); " class="btn btn-primary">Submit</a>
+                </li>
+            </ul>
+            <input type="hidden" id="Longitude" name="Longitude" value="" />
+            <input type="hidden" id="Latitude" name="Latitude" value="" />
+        }
+    </div>
+</div>
+
+@section scripts{
+    <link href="~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.css" rel="stylesheet" />
+    <script src="~/Scripts/moment-with-locales.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script src="~/Scripts/bootbox.js"></script>
+    <script src="~/Scripts/bootstrap-select.js"></script>
+    <script src="~/Scripts/bootstrap-switch.js"></script>
+    <script>
+        // Beautify
+        $("[type='checkbox']").bootstrapSwitch('state', true, true);
+        $('.selectpicker').selectpicker();
+        $('.datetimepicker').datetimepicker({
+            locale: 'en',
+            format: 'YYYY/MM/DD HH:mm'
+        });
+
+        // submit with location
+        function sendWithLocation(form) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(submitForm, showError);
+            } else {
+                bootbox.alert("Geolocation is not supported by this browser.");
+            }
+            from1 = form;
+        }
+
+        function submitForm(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+            var latlon = new google.maps.LatLng(lat, lon);
+
+            $("#Latitude").val(lat);
+            $("#Longitude").val(lon);
+
+            form1.submit();
+        }
+
+        // Geo
+        getLocation();
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                bootbox.alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+            var latlon = new google.maps.LatLng(lat, lon);
+            console.log("google latlon" + latlon);
+            var mapholder = document.getElementById('mapholder');
+            //mapholder.style.height = '450px';
+            //mapholder.style.width = '100%';
+
+            var myOptions = {
+                center: latlon,
+                zoom: 15,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                mapTypeControl: false,
+                navigationControlOptions: { style: google.maps.NavigationControlStyle.SMALL }
+            };
+            var map = new google.maps.Map(document.getElementById("mapholder"), myOptions);
+            var tmarker = new google.maps.Marker({ position: latlon, map: map, title: "You are here!" });
+            var tinfowindow = new google.maps.InfoWindow({
+                content: "I'm Here."
+            });
+            bindInfoWindow(tmarker, map, tinfowindow, "I'm Here.");
+            tinfowindow.open(map, tmarker);
+
+            $.ajax({
+                url: '@Url.Action("GetAllAppointment")',
+                method: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.status == "success") {
+                        for (var count in result.data) {
+                            var item = result.data[count];
+                            var latLng = new google.maps.LatLng(item.Latitude, item.Longitude);
+                            // Creating a marker and putting it on the map
+                            var marker = new google.maps.Marker({
+                                position: latLng,
+                                map: map,
+                                animation: google.maps.Animation.DROP,
+                                title: item.title
+                            });
+                            if (item.CreaterId != '@User.Identity.GetUserId()')
+                                marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+                            var infowindow = new google.maps.InfoWindow({
+                                content: "<div><h1>" + item.Name + "</h1>" + "<a href='@Url.Action("Detail")/" + item.Id + "'>前往觀看</a></div>"
+                            });
+                            var ccontent = "<div><h4>" + item.Name + "</h4>" + "<a href='@Url.Action("Detail")/" + item.Id + "'>前往觀看</a></div>";
+                            bindInfoWindow(marker, map, infowindow, ccontent);
+                        }
+                    } else {
+                        bootbox.alert(result.msg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(xhr.status);
+                    alert(thrownError);
+                }
+            });
+        }
+
+        function bindInfoWindow(marker, map, infowindow, strDescription) {
+            google.maps.event.addListener(marker, 'click', function () {
+                infowindow.setContent(strDescription);
+                infowindow.open(map, marker);
+            });
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    bootbox.alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    bootbox.alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    bootbox.alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    bootbox.alert("An unknown error occurred.");
+                    break;
+            }
+        }
+    </script>
+}

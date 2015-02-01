@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="lonelyeAGTyCH6mBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Appointment">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="PeopleAmount" Type="Int32" />
+    <Property Name="FoodTypes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="PriceRangeStart" Type="Int32" />
+    <Property Name="PriceRangeEnd" Type="Int32" />
+    <Property Name="AllowAnonymous" Type="Boolean" Nullable="false" />
+    <Property Name="CreatTimeUtc" Type="DateTime" Precision="3" />
+    <Property Name="Latitude" Type="Double" />
+    <Property Name="Longitude" Type="Double" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="CreaterId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="EatTime" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="AppointmentAcceptions" Relationship="lonelyeAGTyCH6mBModel.FK_AppointmentAcceptions_Appointments" FromRole="Appointment" ToRole="AppointmentAcception" />
+    <Property Name="IsOver" Type="Boolean" Nullable="false" />
+    <Property Name="IsGo" Type="Boolean" Nullable="false" />
+    <NavigationProperty Name="AspNetUser" Relationship="lonelyeAGTyCH6mBModel.FK_Appointments_AspNetUsers" FromRole="Appointment" ToRole="AspNetUser" />
+  </EntityType>
+  <EntityType Name="FoodType">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="CreatTimeUtc" Type="DateTime" Precision="3" />
+  </EntityType>
+  <EntityContainer Name="lonelyeAGTyCH6mBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Appointments" EntityType="Self.Appointment" />
+    <EntitySet Name="FoodTypes" EntityType="Self.FoodType" />
+    <EntitySet Name="AppointmentAcceptions" EntityType="lonelyeAGTyCH6mBModel.AppointmentAcception" />
+    <AssociationSet Name="FK_AppointmentAcceptions_Appointments" Association="lonelyeAGTyCH6mBModel.FK_AppointmentAcceptions_Appointments">
+      <End Role="Appointment" EntitySet="Appointments" />
+      <End Role="AppointmentAcception" EntitySet="AppointmentAcceptions" />
+    </AssociationSet>
+    <EntitySet Name="AspNetRoles" EntityType="lonelyeAGTyCH6mBModel.AspNetRole" />
+    <EntitySet Name="AspNetUserClaims" EntityType="lonelyeAGTyCH6mBModel.AspNetUserClaim" />
+    <EntitySet Name="AspNetUserLogins" EntityType="lonelyeAGTyCH6mBModel.AspNetUserLogin" />
+    <EntitySet Name="AspNetUsers" EntityType="lonelyeAGTyCH6mBModel.AspNetUser" />
+    <AssociationSet Name="FK_AppointmentAcceptions_AspNetUsers" Association="lonelyeAGTyCH6mBModel.FK_AppointmentAcceptions_AspNetUsers">
+      <End Role="AspNetUser" EntitySet="AspNetUsers" />
+      <End Role="AppointmentAcception" EntitySet="AppointmentAcceptions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="lonelyeAGTyCH6mBModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+      <End Role="AspNetUser" EntitySet="AspNetUsers" />
+      <End Role="AspNetUserClaim" EntitySet="AspNetUserClaims" />
+    </AssociationSet>
+    <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="lonelyeAGTyCH6mBModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+      <End Role="AspNetUser" EntitySet="AspNetUsers" />
+      <End Role="AspNetUserLogin" EntitySet="AspNetUserLogins" />
+    </AssociationSet>
+    <AssociationSet Name="AspNetUserRoles" Association="lonelyeAGTyCH6mBModel.AspNetUserRoles">
+      <End Role="AspNetRole" EntitySet="AspNetRoles" />
+      <End Role="AspNetUser" EntitySet="AspNetUsers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Appointments_AspNetUsers" Association="lonelyeAGTyCH6mBModel.FK_Appointments_AspNetUsers">
+      <End Role="AspNetUser" EntitySet="AspNetUsers" />
+      <End Role="Appointment" EntitySet="Appointments" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="AppointmentAcception">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="AppointmentId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="IsAccept" Type="Boolean" Nullable="false" />
+    <Property Name="AcceptTime" Type="DateTime" Precision="3" />
+    <Property Name="CreatTimeUtc" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Appointment" Relationship="lonelyeAGTyCH6mBModel.FK_AppointmentAcceptions_Appointments" FromRole="AppointmentAcception" ToRole="Appointment" />
+    <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AspNetUser" Relationship="lonelyeAGTyCH6mBModel.FK_AppointmentAcceptions_AspNetUsers" FromRole="AppointmentAcception" ToRole="AspNetUser" />
+  </EntityType>
+  <Association Name="FK_AppointmentAcceptions_Appointments">
+    <End Type="lonelyeAGTyCH6mBModel.Appointment" Role="Appointment" Multiplicity="0..1" />
+    <End Type="lonelyeAGTyCH6mBModel.AppointmentAcception" Role="AppointmentAcception" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Appointment">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="AppointmentAcception">
+        <PropertyRef Name="AppointmentId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="AspNetRole">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AspNetUsers" Relationship="lonelyeAGTyCH6mBModel.AspNetUserRoles" FromRole="AspNetRole" ToRole="AspNetUser" />
+  </EntityType>
+  <EntityType Name="AspNetUserClaim">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AspNetUser" Relationship="lonelyeAGTyCH6mBModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaim" ToRole="AspNetUser" />
+  </EntityType>
+  <EntityType Name="AspNetUserLogin">
+    <Key>
+      <PropertyRef Name="LoginProvider" />
+      <PropertyRef Name="ProviderKey" />
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="LoginProvider" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="ProviderKey" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AspNetUser" Relationship="lonelyeAGTyCH6mBModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogin" ToRole="AspNetUser" />
+  </EntityType>
+  <EntityType Name="AspNetUser">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+    <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+    <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+    <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+    <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+    <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+    <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+    <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AppointmentAcceptions" Relationship="lonelyeAGTyCH6mBModel.FK_AppointmentAcceptions_AspNetUsers" FromRole="AspNetUser" ToRole="AppointmentAcception" />
+    <NavigationProperty Name="AspNetUserClaims" Relationship="lonelyeAGTyCH6mBModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserClaim" />
+    <NavigationProperty Name="AspNetUserLogins" Relationship="lonelyeAGTyCH6mBModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserLogin" />
+    <NavigationProperty Name="AspNetRoles" Relationship="lonelyeAGTyCH6mBModel.AspNetUserRoles" FromRole="AspNetUser" ToRole="AspNetRole" />
+    <NavigationProperty Name="Appointments" Relationship="lonelyeAGTyCH6mBModel.FK_Appointments_AspNetUsers" FromRole="AspNetUser" ToRole="Appointment" />
+  </EntityType>
+  <Association Name="FK_AppointmentAcceptions_AspNetUsers">
+    <End Type="lonelyeAGTyCH6mBModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+    <End Type="lonelyeAGTyCH6mBModel.AppointmentAcception" Role="AppointmentAcception" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AspNetUser">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="AppointmentAcception">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+    <End Type="lonelyeAGTyCH6mBModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="lonelyeAGTyCH6mBModel.AspNetUserClaim" Role="AspNetUserClaim" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AspNetUser">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="AspNetUserClaim">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+    <End Type="lonelyeAGTyCH6mBModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="lonelyeAGTyCH6mBModel.AspNetUserLogin" Role="AspNetUserLogin" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AspNetUser">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="AspNetUserLogin">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AspNetUserRoles">
+    <End Type="lonelyeAGTyCH6mBModel.AspNetRole" Role="AspNetRole" Multiplicity="*" />
+    <End Type="lonelyeAGTyCH6mBModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
+  </Association>
+  <Association Name="FK_Appointments_AspNetUsers">
+    <End Type="lonelyeAGTyCH6mBModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+    <End Type="lonelyeAGTyCH6mBModel.Appointment" Role="Appointment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AspNetUser">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Appointment">
+        <PropertyRef Name="CreaterId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

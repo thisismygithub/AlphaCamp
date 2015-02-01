@@ -1,0 +1,123 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "All";
+}
+
+<h2>All</h2>
+
+<div id="mapholder"></div>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <link href="~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.css" rel="stylesheet" />
+    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script src="~/Scripts/bootbox.js"></script>
+    <script src="~/Scripts/bootstrap-select.js"></script>
+    <script src="~/Scripts/bootstrap-switch.js"></script>
+    <script>
+        // Beautify
+        $("[type='checkbox']").bootstrapSwitch('state', true, true);
+        $('.selectpicker').selectpicker();
+
+        // Geo
+        getLocation();
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                bootbox.alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+            var latlon = new google.maps.LatLng(lat, lon);
+            var mapholder = document.getElementById('mapholder');
+            mapholder.style.height = '450px';
+            mapholder.style.width = '100%';
+
+            var myOptions = {
+                center: latlon,
+                zoom: 15,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                mapTypeControl: false,
+                navigationControlOptions: { style: google.maps.NavigationControlStyle.SMALL }
+            };
+            var map = new google.maps.Map(document.getElementById("mapholder"), myOptions);
+
+
+            // Load relative appointment
+            $.ajax({
+                url: '@Url.Action("GetAllAppointment")',
+                method: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.status == "success") {
+                        for (var count in result.data) {
+                            var item = result.data[count];
+                            var latLng = new google.maps.LatLng(item.Latitude, item.Longitude);
+                            // Creating a marker and putting it on the map
+                            var marker = new google.maps.Marker({
+                                position: latLng,
+                                map: map,
+                                animation: google.maps.Animation.DROP,
+                                title: item.title
+                            });
+                            if (item.CreaterId != '@User.Identity.GetUserId()')
+                                marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+                            var infowindow = new google.maps.InfoWindow({
+                                content: item.Name
+                            });
+                            bindInfoWindow(marker, map, infowindow, item.Name);
+                            infowindow.open(map, marker);
+                        }
+                    } else {
+                        bootbox.alert(result.msg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(xhr.status);
+                    alert(thrownError);
+                }
+            });
+
+            //var infowindow = new google.maps.InfoWindow({
+            //    content: "test",
+            //    maxWidth: 200
+            //});
+            //var marker = new google.maps.Marker({ position: latlon, map: map, title: "You are here!" });
+            //google.maps.event.addListener(marker, 'click', function () {
+            //    infowindow.open(map, marker);
+            //});
+        }
+
+        function bindInfoWindow(marker, map, infowindow, strDescription) {
+            google.maps.event.addListener(marker, 'click', function () {
+                infowindow.setContent(strDescription);
+                infowindow.open(map, marker);
+            });
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    bootbox.alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    bootbox.alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    bootbox.alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    bootbox.alert("An unknown error occurred.");
+                    break;
+            }
+        }
+    </script>
+}

@@ -1,0 +1,105 @@
+﻿@model AlphaCamp.Models.Appointment
+
+@{
+    ViewBag.Title = "Detail";
+}
+
+<h2>Detail</h2>
+
+<div>
+    <h4>Appointment</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            團名(活動名稱)：
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            揪團者：
+        </dt>
+
+        <dd>
+            @Model.AspNetUser.UserName
+        </dd>
+
+        <dt>
+            成團人數：
+        </dt>
+
+        <dd>
+            @(ViewBag.acceptCount + " / " + Model.PeopleAmount)
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="@ViewBag.acceptPersent" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: @ViewBag.acceptPersent%;">
+                    @ViewBag.acceptPersent% 滿員
+                </div>
+            </div>
+        </dd>
+
+        <dt>
+            討伐目標：
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FoodTypes)
+        </dd>
+
+        <dt>
+            口袋深度：
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PriceRangeStart)
+            ~
+            @Html.DisplayFor(model => model.PriceRangeEnd)
+        </dd>
+
+        <dt>
+            是否徵求有緣人：
+        </dt>
+
+        <dd>
+            @if (Model.AllowAnonymous)
+            {
+                <text>是</text>
+            }
+            else
+            {
+                <text>否</text>
+            }
+        </dd>
+
+        <dt>
+            出征時間：
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EatTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @if (ViewBag.acceptCount < Model.PeopleAmount)
+    {
+        @Html.ActionLink("一起聚餐", "SayYes", new { id = Model.Id }, new { @class = "btn btn-lg btn-primary" })
+        @Html.ActionLink("看別的", "Index", null, new { @class = "btn btn-lg btn-default" })
+    }
+    else
+    {
+        @Html.ActionLink("此團已滿員，看別的", "Index", null, new { @class = "btn btn-lg btn-default" })
+    }
+</p>
+
+@section scripts{
+    <script src="~/Scripts/bootbox.js"></script>
+    @if (TempData["alert"] != null && !string.IsNullOrWhiteSpace(TempData["alert"].ToString()))
+    {
+        <script>
+            bootbox.alert("@TempData["alert"].ToString()");
+        </script>
+    }
+}

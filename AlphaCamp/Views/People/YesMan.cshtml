@@ -1,0 +1,146 @@
+﻿@using AlphaCamp.Models
+@using Microsoft.AspNet.Identity
+@model AlphaCamp.Models.Appointment
+
+@{
+    ViewBag.Title = "YesMan";
+}
+
+<h2>YesMan</h2>
+@if (!Model.IsOver)
+{
+    <h3><span class="label label-success">開團徵求勇者中</span></h3>
+}
+else
+{
+    if (Model.IsGo)
+    {
+        <h3><span class="label label-info">已出團</span></h3>
+    }
+    else
+    {
+        <h3><span class="label label-danger">已滅團</span></h3>
+    }
+}
+<div>
+    <div>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                團名(活動名稱)：
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt>
+                揪團者：
+            </dt>
+
+            <dd>
+                @Model.AspNetUser.UserName
+            </dd>
+
+            <dt>
+                成團人數：
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.PeopleAmount)
+            </dd>
+
+            <dt>
+                討伐目標：
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.FoodTypes)
+            </dd>
+
+            <dt>
+                口袋深度：
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.PriceRangeStart)
+                ~
+                @Html.DisplayFor(model => model.PriceRangeEnd)
+            </dd>
+
+            <dt>
+                是否徵求有緣人：
+            </dt>
+
+            <dd>
+                @if (Model.AllowAnonymous)
+                {
+                    <text>是</text>
+                }
+                else
+                {
+                    <text>否</text>
+                }
+            </dd>
+
+            <dt>
+                出征時間：
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.EatTime)
+            </dd>
+
+        </dl>
+    </div>
+    <div>
+        參與者
+        <table class="table table-striped table-hover">
+            <tr>
+                <td>編號</td>
+                <td width="150">身分</td>
+                <td>暱稱</td>
+                @if (User.Identity.GetUserId().ToLower().Equals(Model.CreaterId.ToLower()))
+                {
+                    <td>控制</td>
+                }
+            </tr>
+            <tr>
+                <td>1.</td>
+                <td>主辦</td>
+                <td>@Model.AspNetUser.UserName</td>
+                <td></td>
+            </tr>
+            @{int i = 2;}
+            @foreach (AppointmentAcception item in ViewBag.acceptList)
+            {
+                <tr>
+                    <td>@i</td>
+                    <td>參與者</td>
+                    <td>@item.AspNetUser.UserName</td>
+                    @if (User.Identity.GetUserId().ToLower().Equals(Model.CreaterId.ToLower()))
+                    {
+                        <td>
+                            <a href="@Url.Action("RemoveAcception", new { id = item.Id })" class="btn btn-danger">把他踢掉</a>
+                        </td>
+                    }
+                </tr>
+                    i++;
+            }
+        </table>
+    </div>
+</div>
+
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+@section scripts{
+    <script src="~/Scripts/bootbox.js"></script>
+    @if (TempData["alert"] != null && !string.IsNullOrWhiteSpace(TempData["alert"].ToString()))
+    {
+        <script>
+            bootbox.alert("@TempData["alert"].ToString()");
+        </script>
+    }
+}
