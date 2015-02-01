@@ -7,21 +7,31 @@
 }
 
 <h2>YesMan</h2>
-@if (!Model.IsOver)
-{
-    <h3><span class="label label-success">開團徵求勇者中</span></h3>
-}
-else
-{
-    if (Model.IsGo)
+<div>
+    @if (!Model.IsOver)
     {
-        <h3><span class="label label-info">已出團</span></h3>
+        <h3><span class="label label-success">開團徵求勇者中</span></h3>
     }
     else
     {
-        <h3><span class="label label-danger">已滅團</span></h3>
+        if (Model.IsGo)
+        {
+            <h3><span class="label label-info">已出團</span></h3>
+        }
+        else
+        {
+            <h3><span class="label label-danger">已滅團</span></h3>
+        }
     }
-}
+</div>
+<div>
+    @if (User.Identity.GetUserId().ToLower().Equals(Model.CreaterId.ToLower()))
+    {
+        <a href="@Url.Action("SayGo", new { id = Model.Id })"><span class="glyphicon glyphicon-ok btn btn-default" aria-hidden="true">立即開團</span></a>
+        <text>&nbsp;&nbsp;</text>
+        <a href="@Url.Action("SayBye", new { id = Model.Id })"><span class="glyphicon glyphicon-remove btn btn-default" aria-hidden="true">宣告流團</span></a>
+    }
+</div>
 <div>
     <div>
         <hr />
@@ -47,7 +57,12 @@ else
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.PeopleAmount)
+                @(ViewBag.acceptCount + " / " + Model.PeopleAmount)
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="@ViewBag.acceptPersent" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: @ViewBag.acceptPersent%;">
+                        @ViewBag.acceptPersent% 滿員
+                    </div>
+                </div>
             </dd>
 
             <dt>

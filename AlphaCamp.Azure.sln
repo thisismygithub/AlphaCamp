@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaCamp", "AlphaCamp\AlphaCamp.csproj", "{B4A2A65C-946B-4BC0-A2C2-3BA64742CFE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaCamp.Tests", "AlphaCamp.Tests\AlphaCamp.Tests.csproj", "{DAC0B386-262F-4C03-9FF9-CE16B2777AF1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3CACD872-9988-460D-BDE9-A27041968BA2}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -16,16 +14,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3CACD8
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
+		SccNumberOfProjects = 2
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://lettucebo.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = AlphaCamp\\AlphaCamp.csproj
 		SccProjectName1 = AlphaCamp
 		SccLocalPath1 = AlphaCamp
-		SccProjectUniqueName2 = AlphaCamp.Tests\\AlphaCamp.Tests.csproj
-		SccProjectName2 = AlphaCamp.Tests
-		SccLocalPath2 = AlphaCamp.Tests
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,10 +31,6 @@ Global
 		{B4A2A65C-946B-4BC0-A2C2-3BA64742CFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4A2A65C-946B-4BC0-A2C2-3BA64742CFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4A2A65C-946B-4BC0-A2C2-3BA64742CFE6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DAC0B386-262F-4C03-9FF9-CE16B2777AF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAC0B386-262F-4C03-9FF9-CE16B2777AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAC0B386-262F-4C03-9FF9-CE16B2777AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAC0B386-262F-4C03-9FF9-CE16B2777AF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

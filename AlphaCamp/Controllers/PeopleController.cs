@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Web;
@@ -59,6 +60,16 @@ namespace AlphaCamp.Controllers
             }
             ViewBag.foodTypes = items;
 
+            string alert = string.Empty;
+            foreach (ModelState modelState in ViewData.ModelState.Values) {
+                foreach (ModelError error in modelState.Errors)
+                {
+                    alert += error.ErrorMessage + "<br/>";
+                }
+            }
+
+            TempData["alert"] = alert;
+
             return View(model);
         }
 
@@ -73,7 +84,7 @@ namespace AlphaCamp.Controllers
             //string userId = User.Identity.GetUserId();
             //if (User.Identity.IsAuthenticated)
             //    appoints = appoints.Where(x => x.CreaterId != userId);
-            var result = appoints.Select(x => new MapModel() { Id = x.Id, PeopleAmount = x.PeopleAmount, FoodTypes = x.FoodTypes, PriceRangeStart = x.PriceRangeStart, PriceRangeEnd = x.PriceRangeEnd, Name = x.Name, Latitude = x.Latitude, Longitude = x.Longitude, CreaterId = x.CreaterId }).ToList();
+            var result = appoints.Select(x => new MapModel() { Id = x.Id, PeopleAmount = x.PeopleAmount, FoodTypes = x.FoodTypes, PriceRangeStart = x.PriceRangeStart, PriceRangeEnd = x.PriceRangeEnd, Name = x.Name, Latitude = x.Latitude, Longitude = x.Longitude, CreaterId = x.CreaterId, IsOver = x.IsOver }).Where(x => x.IsOver == false).ToList();
             if (!result.Any())
                 return Json(new { status = "error", msg = "No data" }, JsonRequestBehavior.AllowGet);
 
@@ -94,6 +105,7 @@ namespace AlphaCamp.Controllers
             public string Name { get; set; }
             public string CreaterId { get; set; }
             public Nullable<System.DateTime> EatTime { get; set; }
+            public bool IsOver { get; set; }
         }
 
         public ActionResult Detail(string id)
@@ -160,10 +172,18 @@ namespace AlphaCamp.Controllers
                     db.AppointmentAcceptions.FirstOrDefault(x => x.UserId == userId && x.AppointmentId == act.Id);
                 if (accept == null)
                     return HttpNotFound();
+                if (userId != accept.UserId)
+                    return HttpNotFound();
             }
 
             var acceptList = db.AppointmentAcceptions.Include("AspNetUser").Where(x => x.AppointmentId == act.Id).ToList();
             ViewBag.acceptList = acceptList;
+
+            int acceptCount = db.AppointmentAcceptions.Count(x => x.AppointmentId == act.Id) + 1;
+            float acceptPersent = acceptCount / (float)act.PeopleAmount * 100;
+
+            ViewBag.acceptCount = acceptCount;
+            ViewBag.acceptPersent = acceptPersent;
 
             return View(act);
         }
@@ -179,6 +199,33 @@ namespace AlphaCamp.Controllers
                 return HttpNotFound();
 
             db.AppointmentAcceptions.Remove(accept);
+            db.SaveChanges();
+
+            return RedirectToAction("YesMan", new { id = act.Id });
+        }
+
+        public ActionResult SayBye(string id)
+        {
+            var act = db.Appointments.FirstOrDefault(x => x.Id == id);
+            if (act == null)
+                return HttpNotFound();
+
+            db.Entry(act).State = EntityState.Modified;
+            act.IsOver = true;
+            db.SaveChanges();
+
+            return RedirectToAction("YesMan", new { id = act.Id });
+        }
+
+        public ActionResult SayGo(string id)
+        {
+            var act = db.Appointments.FirstOrDefault(x => x.Id == id);
+            if (act == null)
+                return HttpNotFound();
+
+            db.Entry(act).State = EntityState.Modified;
+            act.IsOver = true;
+            act.IsGo = true;
             db.SaveChanges();
 
             return RedirectToAction("YesMan", new { id = act.Id });
